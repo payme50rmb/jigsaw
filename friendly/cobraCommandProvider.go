@@ -30,9 +30,8 @@ func (p *CobraCommandProvider) Name() contract.ModuleName {
 }
 
 func (p *CobraCommandProvider) Apply(ctx context.Context) error {
-	for s, module := range p.c.Modules() {
+	for _, module := range p.c.Modules() {
 		if u, ok := module.(UseCobraCommand); ok {
-			p.log.F("module", s).Info("register cobra command")
 			u.UseCobraCommand(p.root)
 		}
 	}

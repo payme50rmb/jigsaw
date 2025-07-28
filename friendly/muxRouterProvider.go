@@ -44,9 +44,8 @@ func (p *MuxRouterProvider) Apply(ctx context.Context) error {
 	if p.router == nil {
 		p.router = mux.NewRouter()
 	}
-	for name, module := range p.c.Modules() {
+	for _, module := range p.c.Modules() {
 		if m, ok := module.(UseMuxRouter); ok {
-			p.log.F("module", name).Info("the module is register at MuxRouterProvider")
 			m.UseMuxRouter(p.router)
 		}
 	}
