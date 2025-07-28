@@ -25,11 +25,16 @@ func (c *C) Register(module contract.Module) {
 	if mt, ok := module.(contract.Nameable); ok {
 		name = string(mt.Name())
 	} else {
-		typ := reflect.TypeOf(c).Elem()
+		typ := reflect.TypeOf(module).Elem()
 		name = typ.String()
 	}
 	if _, ok := c.modules[name]; ok {
-		panic("module name duplicated")
+		c.log.F("module", name).Error("module name duplicated", nil)
+	}
+	if mt, ok := module.(contract.Initable); ok {
+		if err := mt.Init(); err != nil {
+			c.log.F("module", name).Error("init module failed", err)
+		}
 	}
 	c.modules[name] = module
 	if r, ok := module.(contract.Rootable); ok {
@@ -45,12 +50,12 @@ func (c *C) Run(ctx context.Context) error {
 	if c.root == nil {
 		return c.RunAsRoot(ctx)
 	}
-	c.apply(ctx) // apply all providers
+	c.apply(ctx)
 	return c.root.Run(ctx)
 }
 
 func (c *C) RunAsRoot(ctx context.Context) error {
-	c.apply(ctx) // apply all providers
+	c.apply(ctx)
 	return c.g.Run()
 }
 
@@ -72,15 +77,6 @@ func (c *C) apply(ctx context.Context) {
 		return
 	}
 
-	// Init all modules
-	for s, module := range c.modules {
-		if m, ok := module.(contract.Initable); ok {
-			if err := m.Init(); err != nil {
-				c.log.F("module", s).Error("init module failed", err)
-			}
-		}
-	}
-
 	// Register all providers
 	ps := make([]contract.Provider, 0)
 	for _, module := range c.modules {
@@ -97,13 +93,16 @@ func (c *C) apply(ctx context.Context) {
 	// Collect all runnable modules
 	for s, module := range c.modules {
 		if r, ok := module.(contract.Runnable); ok {
+			// skip rootable module
+			if _, isRootable := module.(contract.Rootable); isRootable {
+				continue
+			}
 			_ctx, cancel := context.WithCancel(ctx)
 			c.g.Add(func() error {
 				return r.Run(_ctx)
 			}, func(err error) {
 				cancel()
 				c.log.F("module", s).Error("the module is closed", err)
-				_ = r.Close()
 			})
 		}
 	}

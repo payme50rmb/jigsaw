@@ -28,12 +28,12 @@ func (m *Signal) Name() string {
 func (m *Signal) Run(ctx context.Context) error {
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
-	sign := <-ch
-	m.log.F("signal", sign).Info("signal received, shutting down")
-	_ = m.c.Close()
-	return nil
-}
-
-func (m *Signal) Close() error {
-	return nil
+	select {
+	case <-ctx.Done():
+		m.log.Info("receive signal from context, shutting down")
+		return m.c.Close()
+	case sign := <-ch:
+		m.log.F("signal", sign).Info("receive signal from os, shutting down")
+		return m.c.Close()
+	}
 }

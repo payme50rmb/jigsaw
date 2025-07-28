@@ -12,9 +12,10 @@ type UseCobraCommand interface {
 }
 
 type CobraCommandProvider struct {
-	c    contract.Core
-	root *cobra.Command
-	log  logger.Logger
+	c        contract.Core
+	root     *cobra.Command
+	log      logger.Logger
+	isClosed bool
 }
 
 func NewCobraCommandProvider(c contract.Core) *CobraCommandProvider {
@@ -59,8 +60,4 @@ func (p *CobraCommandProvider) Root(m contract.Core) contract.Runnable {
 
 func (p *CobraCommandProvider) Run(ctx context.Context) error {
 	return p.root.ExecuteContext(ctx)
-}
-
-func (p *CobraCommandProvider) Close() error {
-	return p.c.Close()
 }

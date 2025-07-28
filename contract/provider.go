@@ -12,7 +12,6 @@ type Provider interface {
 
 type Runnable interface {
 	Run(ctx context.Context) error
-	Closer
 }
 
 type Closer interface {
