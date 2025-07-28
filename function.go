@@ -1,4 +1,4 @@
-package monica
+package jigsaw
 
 import (
 	"github.com/oklog/run"
