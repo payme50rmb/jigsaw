@@ -103,7 +103,7 @@ func (l *logger) Log(level string, msg string) {
 	pmsg := make(kvs, 0)
 	pmsg = append(pmsg, kv{Key: "level", Value: strings.ToUpper(level)})
 	pmsg = append(pmsg, kv{Key: "msg", Value: msg})
-	pmsg = append(pmsg, kv{Key: "time", Value: time.Now().Format("2006-01-02 15:04:05")})
+	pmsg = append(pmsg, kv{Key: "ts", Value: time.Now().Format("2006-01-02 15:04:05")})
 	pmsg = append(pmsg, l.kvs...)
 	printTo(pmsg)
 }
