@@ -97,6 +97,9 @@ func (l *logger) Error(msg string, err error) {
 }
 
 func (l *logger) Log(level string, msg string) {
+	if !printable(level) {
+		return
+	}
 	pmsg := make(kvs, 0)
 	pmsg = append(pmsg, kv{Key: "level", Value: strings.ToUpper(level)})
 	pmsg = append(pmsg, kv{Key: "msg", Value: msg})

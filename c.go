@@ -30,10 +30,12 @@ func (c *C) Register(module contract.Module) {
 	}
 	if _, ok := c.modules[name]; ok {
 		c.log.F("module", name).Error("module name duplicated", nil)
+		return
 	}
 	if mt, ok := module.(contract.Initable); ok {
 		if err := mt.Init(); err != nil {
 			c.log.F("module", name).Error("init module failed", err)
+			return
 		}
 	}
 	c.modules[name] = module

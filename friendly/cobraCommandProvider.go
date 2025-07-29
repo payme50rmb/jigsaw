@@ -7,6 +7,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var rootCmd = &cobra.Command{
+	Use:   "jigsaw",
+	Short: "jigsaw is a monorepo management tool",
+}
+
 type UseCobraCommand interface {
 	UseCobraCommand(root *cobra.Command)
 }
@@ -25,6 +30,12 @@ func NewCobraCommandProvider(c contract.Core) *CobraCommandProvider {
 	}
 }
 
+func NewCobraCommandProviderWithRoot(c contract.Core, root *cobra.Command) *CobraCommandProvider {
+	p := NewCobraCommandProvider(c)
+	p.root = root
+	return p
+}
+
 func (p *CobraCommandProvider) Name() contract.ModuleName {
 	return "default.providers.cobraCommand"
 }
@@ -40,9 +51,8 @@ func (p *CobraCommandProvider) Apply(ctx context.Context) error {
 
 func (p *CobraCommandProvider) Root(m contract.Core) contract.Runnable {
 	p.c = m
-	p.root = &cobra.Command{
-		Use:   "monica",
-		Short: "monica is a monorepo management tool",
+	if p.root == nil {
+		p.root = rootCmd
 	}
 	var configPath string
 	p.root.PersistentFlags().StringVarP(&configPath, "config", "c", "config.yaml", "config file path")
