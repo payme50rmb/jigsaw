@@ -57,10 +57,17 @@ func printable(level string) bool {
 	return true
 }
 
-func printTo(l string) {
+func printTo(l kvs) {
+	var s string
+	switch logFormat {
+	case "json":
+		s = l.Json()
+	default:
+		s = l.String()
+	}
 	switch logOutput {
 	case "stdout":
-		fmt.Println(l)
+		fmt.Println(s)
 		return
 	case "file":
 		if logFilePath == "" {
@@ -73,7 +80,7 @@ func printTo(l string) {
 			}
 			openedFile = f
 		}
-		_, _ = openedFile.WriteString(l + "\n")
+		_, _ = openedFile.WriteString(s + "\n")
 		return
 	}
 }

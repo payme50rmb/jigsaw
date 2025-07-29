@@ -105,7 +105,7 @@ func (l *logger) Log(level string, msg string) {
 	pmsg = append(pmsg, kv{Key: "msg", Value: msg})
 	pmsg = append(pmsg, kv{Key: "time", Value: time.Now().Format("2006-01-02 15:04:05")})
 	pmsg = append(pmsg, l.kvs...)
-	fmt.Println(pmsg.Json())
+	printTo(pmsg)
 }
 
 func (l *logger) F(key string, value any) Logger {

@@ -5,6 +5,7 @@ go 1.24
 require (
 	github.com/gorilla/mux v1.8.1
 	github.com/oklog/run v1.2.0
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/viper v1.20.1
 )
