@@ -58,7 +58,7 @@ func (p *CobraCommandProvider) Root(m contract.Core) contract.Runnable {
 	p.root.PersistentFlags().StringVarP(&configPath, "config", "c", "config.yaml", "config file path")
 	p.root.AddCommand(&cobra.Command{
 		Use:   "serve",
-		Short: "serve the monica server",
+		Short: "Run all the runnable modules, and wait for the signal to close",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return p.c.RunAsRoot(cmd.Context())
 		},
